@@ -7,7 +7,7 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 	<flow name="createFullName" doc:id="048605d6-23a0-4573-95c2-7d22584e4972" >
 		<http:listener doc:name="Listener" doc:id="fe7f0777-0e19-4ca6-aeb7-30d282e0ff7f" config-ref="HTTP_Listener_config" path="fullName" allowedMethods="GET"/>
 		<set-payload value='#[%dw 2.0	&#10;&#10;output application/json&#10;---&#10;{&#10;	"fullName": Mule::p("firstName") ++ " " ++ Mule::p("lastName")&#10;}]' doc:name="Set Payload" doc:id="43460750-6bb8-4924-86fb-842719d2d9ad" />
-		<logger level="INFO" doc:name="Logger" doc:id="ba41b6aa-ad39-4e9b-a181-516ea9a30bdf" message="#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;payload]"/>
+		<logger level="INFO" doc:name="Log Payload" doc:id="ba41b6aa-ad39-4e9b-a181-516ea9a30bdf" message="#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;payload]"/>
 		<logger level="INFO" doc:name="Log END" doc:id="a8eba898-ca9d-4bc8-9344-e023b5e87aa6" message='#["LOG END"]'/>
 	</flow>
 </mule>
