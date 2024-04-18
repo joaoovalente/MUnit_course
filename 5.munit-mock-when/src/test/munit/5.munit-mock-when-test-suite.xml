@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="5.munit-mock-when-test-suite.xml" />
+	<munit:test name="AnimalsGETRequestTestCase" doc:id="76965ad7-165b-45f6-94a9-c2a443708114" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when - HTTP GET Request" doc:id="0b213169-577b-4731-9426-987202aeaae9" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="GET Request - getAnimalsList" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;		"animals": [&#10;			"animal": "cow",&#10;			"animal": "pig"&#10;		]&#10;	}]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getAnimals" doc:id="cc5b535c-9c89-4683-8b4b-788e889f39b0" name="getAnimals"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log VALIDATION PAYLOAD" doc:id="6484a367-a304-47c9-a81d-15d29b03e0fb" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"Log VALIDATION PAYLOAD": payload&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="setPetNameTestSuccessCase" doc:id="f8244018-6399-4772-b107-472610c98a49" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when - set variable Pet Name as ZEUS" doc:id="784aecea-3dad-4e79-bc05-94d173f89ed5" processor="set-variable">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Variable - myPetName" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="myPetName" value='#["ZEUS"]' />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getPetName" doc:id="1d07a378-2b34-4891-8297-b21299aa2b30" name="getPetName"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log VALIDATION VARIABLE" doc:id="e237cffd-5e2f-4313-be57-1d42350938ce" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"log_variable_validation_scope": vars.myPetName&#10;}]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="resetPetNameAfterNullSuccessTestCase" doc:id="8f25370f-402e-4814-ace1-e7a3a786e15f" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when - set variable Pet Name as Null" doc:id="4ea84ab3-1618-4a98-b276-4dff616604f9" processor="set-variable" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Variable - myPetName" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:variables >
+						<munit-tools:variable key="myPetName" value="#[null]" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getPetName" doc:id="fff21c13-2248-4bfc-b87f-29b588415db4" name="getPetName" />
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log VALIDATION VARIABLE" doc:id="e4522002-cdb9-4e71-abd7-c37102ec1b9a" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"log_variable_validation_scope": vars.myPetName&#10;}]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getFruitSuccesTestCase" doc:id="5a0d414b-3417-47f3-8119-ca15ed301120" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when - set variable Fruit" doc:id="13974103-47ab-453d-b559-99d259ae886b" processor="flow-ref" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="generateFruitsName" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[[&#10;	"banana", "orange", "apple"&#10;]]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getFruitName" doc:id="b88795ec-9d0a-4d4b-89db-b93677916dc7" name="getFruitName"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log VALIDATION PAYLOAD" doc:id="fc0f3767-eca8-41fc-95cf-3605b2272379" message='#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;{&#10;	"log_payload_validation_scope": payload&#10;}]' />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
