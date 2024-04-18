@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_b11f4d74_7e55_45b6_82db_2bea5726906f_Input_Variables_medicalCategories = Array<"obstetric" | "dermatology" | "epidemiology">
+

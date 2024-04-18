@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="4.munit-assert-test-suite.xml" />
+	<munit:test name="PayloadExpectedSuccess-Test-suite" doc:id="9e82961a-c456-43d0-8975-3ff38ce722ff" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getString" doc:id="85346659-e45c-4a0c-8ae4-81ee9506b810" name="getString"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals - Payload Expected" doc:id="1f499604-8351-47b2-9d70-1d71d2979c66" actual="#[payload]" expected='#["Mulesoft"]' message='#["The response Payload is incorrect"]'/>
+			<logger level="INFO" doc:name="Logger" doc:id="73ebdc00-cca6-448d-93ba-10693cb6e8ce" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="payloadNotNull-Success-Case" doc:id="b9fd60f5-a7b1-4aa6-9834-be6aabdb9bf2" >
+		<munit:execution >
+			<flow-ref doc:name="Flow Ref- getString" doc:id="a9d2c403-ef03-447c-b1cd-395dc70ea244" name="getString"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that - Payload Not Null" doc:id="1c11364b-f700-4194-b21e-de575eb03983" expression="#[%dw 2.0&#10;&#10;output application/json&#10;---&#10;payload]" is="#[MunitTools::notNullValue()]" message='#["The response Payload is Null"]'/>
+			<logger level="INFO" doc:name="Logger" doc:id="bca22557-c4e6-423d-a2f7-c24a177d61bc" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
