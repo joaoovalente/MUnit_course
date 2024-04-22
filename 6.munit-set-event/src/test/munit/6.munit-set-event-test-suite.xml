@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="6.munit-set-event-test-suite.xml" />
+	<munit:test name="clientValidationInsuccessTestCase" doc:id="9a4829c9-f5c7-4f15-bf37-980f8b966b1d" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name='Set Event - payload with district "PORTO"' doc:id="6a3ba705-9be8-4418-8f83-b8b4a3917596" >
+				<munit:payload value='#[{&#10;	"name": "João Valente",&#10;	"district": "Porto"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to ValidateLisbonDistrict" doc:id="b9dd95b0-9e7a-405f-befc-c01ca6383529" name="ValidateLisbonDistrict"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that - vars.validateClient is False" doc:id="b0083647-d1c6-4b56-93d4-049d88462e66" expression="#[vars.validateClient]" is="#[MunitTools::equalTo(false)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="clientValidationSuccessTestCase" doc:id="49a7bfbf-e136-4cd6-89a3-919fcb5866a0" >
+		<munit:execution >
+			<munit:set-event doc:name='Set Event - payload with district "Lisbon"' doc:id="46e99db5-52dc-45a2-8a1f-5d6727f34b2b">
+				<munit:payload value='#[{&#10;	"name": "João Valente",&#10;	"district": "Lisbon"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to ValidateLisbonDistrict" doc:id="0b281ec1-1da6-4233-9e15-fd2f352b9028" name="ValidateLisbonDistrict" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that - vars.validateClient is true" doc:id="04e1ebeb-2ac5-44a9-95b2-a553b6afeaed" expression="#[vars.validateClient]" is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="generateClientUUIDInsuccessTestCase" doc:id="a5fdb6cf-5a4e-4a25-bc3f-38f945784ead" expectedErrorDescription="INVALID CLIENT DATA">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event vars.validateClient is FALSE" doc:id="5114cb39-aae4-4b57-a976-4001e7065667" >
+				<munit:variables >
+					<munit:variable key="validateClient" value="#[false]" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to generateClientUUID" doc:id="ab8a37aa-f0f7-43d8-8577-dc59a9487b67" name="generateClientUUID" />
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger clientUUID" doc:id="0563d3ec-bca5-4513-ab23-75639458adfe" message="#[vars.clientUUID]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="generateClientUUIDSuccessTestCase" doc:id="7079ca15-dfad-43e0-a993-1c116bd0cd38">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event vars.validateClient is TRUE" doc:id="ce7efd7b-3c58-4f99-97c0-ee53574acf3c" >
+				<munit:variables >
+					<munit:variable key="validateClient" value="#[true]" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to generateClientUUID" doc:id="5f81eb7c-370f-4708-8391-c91eae15c87e" name="generateClientUUID" />
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Logger clientUUID" doc:id="b94e043f-bd6b-4613-bc7b-342704f58943" message="#[vars.clientUUID]" />
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
