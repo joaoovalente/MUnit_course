@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="7.munit-verify-call-test-suite.xml" />
+	<munit:test name="7.munit-verify-call-test-suite-getUserNameTest" doc:id="cbafb83e-a80e-4884-acd3-ef9c90600b4a" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event - PAYLOAD == 1" doc:id="484a3897-9b3b-4d56-a8f6-0b760c8e7224" >
+				<munit:payload value="#[1]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserName" doc:id="4b081764-608f-42b2-b1e3-448769342cf0" name="getUserName"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call - sub_Flow1 ZERO" doc:id="201f8523-0bf0-45d3-9f7a-b11a056271ce" processor="flow-ref" times="#[0]">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sub_Flow1" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call - sub_Flow 2 ONCE" doc:id="1dc52242-7b72-45d2-8315-af1838d72300" processor="flow-ref" atLeast="#[1]">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sub_Flow2" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getJonhDoeUserNameSuccessTestCase" doc:id="6d7c186e-cc5c-49c2-81b7-29b6bcb6a0cc" >
+		<munit:execution >
+			<munit:set-event doc:name="Set Event - PAYLOAD == 2" doc:id="511f71e4-78f9-40a7-a952-9e5b6a714e13" >
+				<munit:payload value="#[2]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserName" doc:id="cd7c9d13-a7b7-40e0-a75d-3b96dc2ea100" name="getUserName" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:verify-call doc:name="Verify call - sub_Flow1 ONCE" doc:id="cacfcfe0-aae2-4512-95f2-8d2493c6a70b" processor="flow-ref" atLeast="#[1]">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sub_Flow1" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify call - sub_Flow 2 ZERO" doc:id="93d4cae4-21bd-4148-a1a9-a9f54d18939d" processor="flow-ref" times="#[0]">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="sub_Flow2" attributeName="name" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getUserNameInsuccessTestCase" doc:id="c4f8b21e-c0af-47fe-bde0-9f08b3eda526" expectedErrorType="MULE:EXPRESSION">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event - PAYLOAD is Empty" doc:id="7c02ddcb-8194-4562-8079-a779fca55299" >
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserName" doc:id="a45a9b2e-4e03-4406-8f23-1668ac919f2e" name="getUserName" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="getUserNameExistsSuccessTestCase" doc:id="0572b427-e84c-47cd-aa4e-d38a9cd40c53">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when - Payload Random UserID" doc:id="75b68530-dd6a-400c-be79-673364b8847c" processor="set-payload">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Payload - userID" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[round(random()*1000)]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getUserNameByID" doc:id="877abbf5-b990-4b62-b9cf-af4b6497ea19" name="getUserNameByID" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that- Payload Exists" doc:id="70386254-9b92-409e-b60a-9ff0929c2d26" is="#[MunitTools::notNullValue()]" expression='#[%dw 2.0&#10;&#10;import * from dw::test::Asserts&#10;---&#10;payload must beOneOf(["Admin","John Doe"])]'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
