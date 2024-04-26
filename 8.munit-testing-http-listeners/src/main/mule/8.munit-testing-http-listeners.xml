@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+	<flow name="getUser" doc:id="41513a48-9b04-4497-8ba2-6a51826cf41a" >
+		<http:listener doc:name="HTTP GET" doc:id="c1465b2e-04ec-4fc1-8b96-e8ca46339261" config-ref="HTTP_Listener_config" path="/getUser" allowedMethods="GET"/>
+		<logger level="INFO" doc:name="Log START" doc:id="a5240f13-711e-41e8-8ba1-9eba88eb7b00" message='#["Log START"]'/>
+		<set-payload value='#[%dw 2.0 &#10;&#10;output application/json&#10;---&#10;{&#10;	"firstName": "Joao",&#10;	"lastName": "Leite",&#10;	"yearBorn": "1999",&#10;	"district": "Lisbon",&#10;	"genre": "Male"&#10;}]' doc:name="Set Payload - User Data" doc:id="eaa8cafd-81d0-4697-a005-7c9ea4701357" />
+		<logger level="INFO" doc:name="Log Payload" doc:id="0e80dfee-5c9a-4fd2-81df-b05dab186aa6" message="#[payload]"/>
+		<logger level="INFO" doc:name="Log END" doc:id="76eef77d-36f8-41b3-b27e-b7c74b405a70" message='#["Log END"]'/>
+	</flow>
+	<flow name="createNewUser" doc:id="002f65d6-a7bd-4886-80ea-ddf6eaeb8c68" >
+		<http:listener doc:name="Listener - HTTP POST" doc:id="793d7f7b-b410-4329-8a88-f7e1637c24fb" config-ref="HTTP_Listener_config" path="/createUser" allowedMethods="POST"/>
+		<logger level="INFO" doc:name="Log START" doc:id="7479a3ec-d6e0-49ef-adf8-8a39d02c5c38" message='#["Log START"]' />
+		<logger level="INFO" doc:name="Log yearBorn" doc:id="a265ab6f-d703-4709-a7c7-903a713e7815" message="#[payload.yearBorn]" />
+		<logger level="INFO" doc:name="Log CURRENT DATETIME" doc:id="cbc9c519-2b2a-4d9d-bed9-a360dbb48db7" message="#[now()]"/>
+		<choice doc:name="Choice - validate age" doc:id="404cd2b5-5238-4105-9c31-6be1497cc27b" >
+			<when expression="#[now().year - 18 &gt; payload.yearBorn]">
+				<set-payload value='#["Registrations Completed! Welcome " ++ payload.firstName ++ " " ++ payload.lastName ++ "!"]' doc:name="Set Payload - SUCCESS" doc:id="ec6e6454-1ecb-47a4-9049-9c60ac857aea" />
+				<logger level="INFO" doc:name="Log PAYLOAD" doc:id="12694466-5390-46db-bdad-c25f35899f00" message="#[payload]"/>
+			</when>
+			<otherwise >
+				<set-payload value="#[&quot;Sorry &quot; ++ payload.firstName ++ &quot; you're too young to register!&quot;]" doc:name="Set Payload - INSUCCESS" doc:id="b8365702-5af8-474d-a93e-6712e2fb0f47" />
+				<logger level="INFO" doc:name="Log - PAYLOAD" doc:id="d2ff8606-c8a8-46a5-a57e-4737d53f6753" message="#[payload]"/>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Log END" doc:id="3a17ef97-18a8-4228-bb99-6c4cb074d7c0" message='#["Log END"]' />
+	</flow>
+</mule>
