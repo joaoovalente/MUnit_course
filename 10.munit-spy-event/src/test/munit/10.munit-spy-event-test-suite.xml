@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="10.munit-spy-event-test-suite.xml" />
+	<munit:test name="getRandomNumberSuccessTestCase" doc:id="93aa6ade-b53e-4efb-a1e3-bf44ccc1ad6a" description="Test">
+		<munit:enable-flow-sources >
+			<munit:enable-flow-source value="generateRandomNumbers" />
+		</munit:enable-flow-sources>
+		<munit:behavior >
+			<munit-tools:spy doc:name="Spy - HTTP request" doc:id="f5bd3991-f27c-42a2-9d88-c0fd3456b733" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="/randomNumber" attributeName="path" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<logger level="INFO" doc:name="Log BEFORE" doc:id="c7103de0-aaf2-42cf-8c64-224bbc87d156" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"before_call": payload&#10;}]'/>
+					<munit-tools:assert-that doc:name="Assert that - payload is Null" doc:id="17243c39-41de-426a-b5bf-7e579126879f" is="#[MunitTools::nullValue()]" expression="#[payload]"/>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<logger level="INFO" doc:name="Log AFTER" doc:id="850ff3bc-53a6-4c05-abac-c4fbbe8c05dc" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"after_call": payload&#10;}]' />
+					<munit-tools:assert-that doc:name="Assert that - payload is not null" doc:id="435797e0-e293-4d75-81c6-8f6c27e0e702" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getRandomNumber" doc:id="c6ba205e-b291-45f3-9ebd-31908563ab31" name="getRandomNumber"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="getStringLenghtSuccessTestCase" doc:id="94cb9bed-5dce-433b-a447-943df8d2ea7a" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when - payload String" doc:id="f97a6d52-60b5-4e43-89e5-cc17129c77b3" processor="set-payload">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Payload - Sample" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#["test"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<set-variable value="#[678910]" doc:name="Set Variable - modifyVariable" doc:id="1ebe385f-9bec-4465-a751-ef1ce8c17d55" variableName="modifyVariable"/>
+			<munit-tools:spy doc:name="Spy - Transformer" doc:id="d8014f8f-25f7-488e-9b20-7d7f65e44167" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Calculate String Length" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<logger level="INFO" doc:name="Log BEFORE" doc:id="a82d98d3-d39c-41b6-93c2-c4a88746bf7f" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"before_call": payload&#10;}]' />
+					<set-variable value="#[12345]" doc:name="Set Variable - update modifyVariable" doc:id="72735b69-f933-408f-9b8c-8ed431392f94" variableName="modifyVariable" />
+					<munit-tools:assert doc:name="Assert expression - payload is String" doc:id="f2f74fb5-b48d-4ff0-8177-86a07bb04d65" >
+						<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must beString()]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<logger level="INFO" doc:name="Log AFTER" doc:id="8b26a40c-ef69-4342-81ab-1344771bc978" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"after_call": payload&#10;}]' />
+					<munit-tools:assert doc:name="Assert expression - payload is number" doc:id="c59a14e7-b4da-43c9-98c3-9881dba12b8a" >
+						<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must beNumber()]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Ref - getStringLenght" doc:id="2a7df850-2e1b-45f1-ac9f-fd73b5217645" name="getStringLenght"/>
+		</munit:execution>
+		<munit:validation >
+			<logger level="INFO" doc:name="Log VALIDATION - modifyVariable" doc:id="2e63a437-4154-4971-b839-25bdb2b050c1" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"modifyVariable": vars.modifyVariable&#10;}]' />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="getStringLenghtInsuccessTestCase" doc:id="d63c9f54-9838-4d9c-8ec4-db5cc10174b1" expectedErrorType="MULE:CRITICAL">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when - payload number" doc:id="cdd1f421-6071-445d-9178-dbc975b94fe3" processor="set-payload" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Set Payload - Sample" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[49]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy - Transformer" doc:id="95ff7b0a-6863-4825-9e73-de401f0b2e90" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Calculate String Length" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<logger level="INFO" doc:name="Log BEFORE" doc:id="e8e486bc-5e16-4c6f-a3b4-ae5c4af56ce8" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"before_call": payload&#10;}]' />
+					<munit-tools:assert doc:name="Assert expression - payload is String" doc:id="de0f34af-e960-4917-875c-dd1396f24e58" >
+						<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must beString()]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<logger level="INFO" doc:name="Log AFTER" doc:id="e3a95c8f-cb6b-4136-a13e-f791793f773d" message='#[%dw 2.0 &#10;&#10;&#10;output application/json&#10;---&#10;{&#10;	"after_call": payload&#10;}]' />
+					<munit-tools:assert doc:name="Assert expression - payload is number" doc:id="73450b4f-011e-4db3-8bcb-2bbb750c6beb" >
+						<munit-tools:that ><![CDATA[#[import * from dw::test::Asserts 
+ ---
+payload must beNumber()]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow Ref - getStringLenght" doc:id="05b4e494-ffde-4e6a-8afb-3122ace46dc6" name="getStringLenght" />
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
